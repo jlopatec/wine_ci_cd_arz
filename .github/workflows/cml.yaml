@@ -1,0 +1,25 @@
+name: model-wine-jl
+on: [push]
+jobs:
+  run:
+    runs-on: [ubuntu-latest]
+    container: docker://dvcorg/cml-py3:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cml_run
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Your ML workflow goes here
+          pip install -r requirements.txt
+          echo "Running Train out to jl.test"
+          python train.py
+          echo "test echo" > jl.test
+          cat jl.test
+          # Write your CML report
+          ls
+          echo "CAT MODEL METRICS JL"
+          cat metrics.txt >> report.md
+          echo "metrics into report.md"
+          cml-send-comment report.md
+          echo "results into report.md"
